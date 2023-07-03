@@ -1,0 +1,8 @@
+[Unit]
+Description=OpenCool Daemon
+
+[Service]
+ExecStart=/usr/local/bin/opencool --temperature-file=/sys/class/hwmon/hwmon4/temp1_input --monitor-interval=2
+
+[Install]
+WantedBy=multi-user.target
