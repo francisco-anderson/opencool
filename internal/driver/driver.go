@@ -56,9 +56,9 @@ func StartDriver(configurations *config.Configurations) {
 
 	for {
 
-		cpuTemp := util.GetCpuTemp(device.GetTemperatureMonitorFile())
+		cpuTemp := util.GetCpuTemp(device.GetTemperatureMonitorFile(), configurations.TemperatureScale)
 		cpuUsage := util.GetCpuUsage()
-		data := []byte(fmt.Sprintf("HLXDATA(%f,%v,0,0,C)", cpuUsage, cpuTemp))
+		data := []byte(fmt.Sprintf("HLXDATA(%f,%v,0,0,%s)", cpuUsage, cpuTemp, configurations.TemperatureScale))
 		data = append(data, 0x0d)
 		data = append(data, 0x0a)
 		data = append(data, make([]byte, 0x40-len(data))...)

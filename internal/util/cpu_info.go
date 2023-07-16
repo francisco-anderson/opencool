@@ -3,12 +3,13 @@ package util
 import (
 	"bufio"
 	"log"
+	"opencool/internal/config"
 	"os"
 	"strconv"
 	"strings"
 )
 
-func GetCpuTemp(cpuTempFile *string) int {
+func GetCpuTemp(cpuTempFile *string, temperatureScale config.Scale) int {
 	dat, err := os.ReadFile(*cpuTempFile)
 	if err != nil {
 		log.Fatalf("Error on open file: %v. %v", cpuTempFile, err)
@@ -18,6 +19,9 @@ func GetCpuTemp(cpuTempFile *string) int {
 		log.Fatalf("Error on convert string to int. %v", err)
 	}
 	cpuTemp = cpuTemp / 1000
+	if temperatureScale == config.Fahrenheit {
+		cpuTemp = int((float64(cpuTemp) * 1.8) + 32)
+	}
 	return cpuTemp
 }
 

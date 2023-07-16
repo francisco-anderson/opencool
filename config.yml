@@ -1,4 +1,5 @@
 intervalTime: 2
+temperatureScale: C
 cpuDevices:
   - name: k10temp
     tempFile: temp1_input
