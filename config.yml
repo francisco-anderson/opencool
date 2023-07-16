@@ -1,0 +1,4 @@
+intervalTime: 2
+cpuDevices:
+  - name: k10temp
+    tempFile: temp1_input

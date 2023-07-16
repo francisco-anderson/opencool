@@ -1,8 +1,9 @@
-package monitor
+package driver
 
 import (
 	"fmt"
 	"log"
+	"opencool/internal/config"
 	"opencool/internal/util"
 	"strings"
 	"time"
@@ -10,15 +11,15 @@ import (
 	"github.com/google/gousb"
 )
 
-type MonitorParams struct {
-	TempFile     string
-	IntervalTime time.Duration
-}
-
 const VID = 0x34d3
 const PID = 0x1100
 
-func StartMonitoring(params *MonitorParams) {
+func StartDriver(configurations *config.Configurations) {
+
+	device, err := util.FindHwMonDevice(&configurations.CPUDevices)
+	if err != nil {
+		log.Fatalf("Unable to initialize driver: %v", err)
+	}
 
 	// Initialize a new Context.
 	ctx := gousb.NewContext()
@@ -55,7 +56,7 @@ func StartMonitoring(params *MonitorParams) {
 
 	for {
 
-		cpuTemp := util.GetCpuTemp(&params.TempFile)
+		cpuTemp := util.GetCpuTemp(device.GetTemperatureMonitorFile())
 		cpuUsage := util.GetCpuUsage()
 		data := []byte(fmt.Sprintf("HLXDATA(%f,%v,0,0,C)", cpuUsage, cpuTemp))
 		data = append(data, 0x0d)
@@ -77,7 +78,7 @@ func StartMonitoring(params *MonitorParams) {
 			fmt.Printf("Device error message: %s", stringRes)
 		}
 
-		time.Sleep(params.IntervalTime)
+		time.Sleep(configurations.IntervalTime * time.Second)
 
 	}
 

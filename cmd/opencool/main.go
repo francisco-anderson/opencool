@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-	"time"
 
-	"opencool/internal/monitor"
+	"opencool/internal/config"
+	"opencool/internal/driver"
 
 	"github.com/alecthomas/kong"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -19,15 +20,24 @@ var (
 type versionFlag bool
 
 var CLI struct {
-	TempFile     string      `help:"CPU Temperature file" name:"temperature-file" type:"string" required:""`
-	IntervalTime int         `help:"Time in seconds to update" name:"monitor-interval" type:"int" required:""`
-	Version      versionFlag `help:"Show build version" name:"version" type:"bool"`
+	ConfigFile string      `help:"Opencool configuration file" type:"string" required:""`
+	Version    versionFlag `help:"Show build version" name:"version" type:"bool"`
 }
 
 func main() {
 	ctx := kong.Parse(&CLI)
 	fmt.Println(ctx.Command())
-	monitor.StartMonitoring(&monitor.MonitorParams{TempFile: CLI.TempFile, IntervalTime: time.Second * time.Duration(CLI.IntervalTime)})
+
+	viper.SetConfigFile(CLI.ConfigFile)
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Printf("Error reading config file, %s", err)
+	}
+	var configuration config.Configurations
+	err := viper.Unmarshal((&configuration))
+	if err != nil {
+		fmt.Printf("Error reading config file, %s", err)
+	}
+	driver.StartDriver(&configuration)
 }
 
 func (v versionFlag) BeforeApply() error {

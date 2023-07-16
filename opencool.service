@@ -2,7 +2,7 @@
 Description=OpenCool Daemon
 
 [Service]
-ExecStart=/usr/local/bin/opencool --temperature-file=/sys/class/hwmon/hwmon4/temp1_input --monitor-interval=2
+ExecStart=/usr/local/bin/opencool --config-file=/etc/opencool/config.yml
 
 [Install]
 WantedBy=multi-user.target
