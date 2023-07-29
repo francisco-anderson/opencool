@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	stdlog "log"
 	"os"
 	"runtime"
+	"strings"
 
 	"opencool/internal/config"
 	"opencool/internal/driver"
@@ -25,6 +27,8 @@ var CLI struct {
 }
 
 func main() {
+	stdlog.SetOutput(new(LogWriter))
+
 	ctx := kong.Parse(&CLI)
 	fmt.Println(ctx.Command())
 
@@ -38,6 +42,18 @@ func main() {
 		fmt.Printf("Error reading config file, %s", err)
 	}
 	driver.StartDriver(&configuration)
+}
+
+type LogWriter int
+
+func (LogWriter) Write(data []byte) (int, error) {
+	logmessage := string(data)
+	//fix - disable warnings libusb: interrupted [code -10]
+	if strings.Contains(logmessage, "interrupted [code -10]") {
+		return len(data), nil
+	}
+	fmt.Println(logmessage)
+	return len(data), nil
 }
 
 func (v versionFlag) BeforeApply() error {
