@@ -58,9 +58,7 @@ func StartDriver(configurations *config.Configurations) {
 
 		cpuTemp := util.GetCpuTemp(device.GetTemperatureMonitorFile(), configurations.TemperatureScale)
 		cpuUsage := util.GetCpuUsage()
-		data := []byte(fmt.Sprintf("HLXDATA(%f,%v,0,0,%s)", cpuUsage, cpuTemp, configurations.TemperatureScale))
-		data = append(data, 0x0d)
-		data = append(data, 0x0a)
+		data := []byte(fmt.Sprintf("HLXDATA(%f,%v,0,0,%s)\r\n", cpuUsage, cpuTemp, configurations.TemperatureScale))
 		data = append(data, make([]byte, 0x40-len(data))...)
 
 		// Write data to the USB device.
