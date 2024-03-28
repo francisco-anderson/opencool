@@ -30,3 +30,7 @@ clean:
 
 install:
 	cp ./bin/opencool ${PREFIX}/bin
+	mkdir -p /etc/opencool/
+	cp ./config.yml /etc/opencool/config.yml
+	cp ./opencool.service /etc/systemd/system/opencool.service
+	systemctl daemon-reload 
